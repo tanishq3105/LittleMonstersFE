@@ -18,7 +18,9 @@ const Navbar = async () => {
             <Image
               src="/logo.png"
               alt="Little Monsters"
-              className="h-12 w-full object-contain max-w-full"
+              width={120}
+              height={48}
+              className="h-12 w-auto object-contain"
             />
           </Link>
           <MainNav data={categories || []} />

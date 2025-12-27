@@ -9,8 +9,10 @@ export default function Footer() {
             <div className="w-24 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
               <Image
                 src="/logo.png"
-                alt="Little Monsters Travel Kit Logo"
-                className="w-full h-full object-cover rounded-xl bg-[#169C97] outline-[#169C97] outline-3"
+                alt="Little Monsters"
+                width={120}
+                height={48}
+                className="h-12 w-auto object-contain bg-[#169C97]"
               />
             </div>
             <p className="font-['Plus_Jakarta_Sans',Helvetica] font-normal text-white text-base leading-6">
