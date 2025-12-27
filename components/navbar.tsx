@@ -16,7 +16,7 @@ const Navbar = async () => {
         <div className="relative flex items-center h-16 px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex ml-4 lg:ml-0 gap-x-2">
             <Image
-              src="/logo.png"
+              src="https://www.littlemonsters.fun/assets/Logo.png"
               alt="Little Monsters"
               width={120}
               height={48}

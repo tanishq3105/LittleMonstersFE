@@ -8,7 +8,7 @@ export default function Footer() {
           <div className="flex flex-col items-start gap-6 w-full">
             <div className="w-24 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
               <Image
-                src="/logo.png"
+                src="https://www.littlemonsters.fun/assets/Logo.png"
                 alt="Little Monsters"
                 width={120}
                 height={48}
