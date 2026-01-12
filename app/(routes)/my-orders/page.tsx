@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Container from "@/components/ui/container";
 import Button from "@/components/ui/button";
 import { toast } from "react-hot-toast";
@@ -14,19 +15,101 @@ interface OrderData {
   products: any[];
 }
 
+interface StoredSession {
+  email: string;
+  name: string;
+  timestamp: number;
+}
+
+const SESSION_KEY = "my_orders_session";
+const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
 export default function MyOrdersPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [orders, setOrders] = useState<OrderData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true to check session
   const [verified, setVerified] = useState(false);
   const [verifiedName, setVerifiedName] = useState("");
   const [demoOtp, setDemoOtp] = useState("");
+  const [sessionChecked, setSessionChecked] = useState(false);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const router = useRouter();
 
-  const handleSendOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Check for existing session on mount
+  useEffect(() => {
+    const checkExistingSession = async () => {
+      try {
+        const storedSession = localStorage.getItem(SESSION_KEY);
+        if (storedSession) {
+          const session: StoredSession = JSON.parse(storedSession);
+          const now = Date.now();
+
+          // Check if session is still valid (within 24 hours)
+          if (now - session.timestamp < SESSION_DURATION) {
+            // Session is valid, fetch orders automatically
+            setEmail(session.email);
+            setName(session.name);
+            setVerifiedName(session.name);
+
+            const ordersResponse = await fetch(
+              `${
+                process.env.NEXT_PUBLIC_API_URL
+              }/orders-by-email?email=${encodeURIComponent(session.email)}`
+            );
+
+            if (ordersResponse.ok) {
+              const ordersData = await ordersResponse.json();
+              setOrders(ordersData);
+              setVerified(true);
+              setSessionChecked(true);
+              setLoading(false);
+              return;
+            }
+          } else {
+            // Session expired, remove it
+            localStorage.removeItem(SESSION_KEY);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        localStorage.removeItem(SESSION_KEY);
+      }
+
+      setSessionChecked(true);
+      setLoading(false);
+    };
+
+    checkExistingSession();
+  }, []);
+
+  // Save session to localStorage
+  const saveSession = (email: string, name: string) => {
+    const session: StoredSession = {
+      email,
+      name,
+      timestamp: Date.now(),
+    };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  };
+
+  // Clear session and show login form
+  const clearSessionAndShowLogin = () => {
+    localStorage.removeItem(SESSION_KEY);
+    setVerified(false);
+    setName("");
+    setEmail("");
+    setOtpSent(false);
+    setOtp("");
+    setOrders(null);
+    setVerifiedName("");
+  };
+
+  const handleSendOtp = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
 
     if (!name.trim()) {
       toast.error("Please enter your name");
@@ -45,7 +128,7 @@ export default function MyOrdersPage() {
       return;
     }
 
-    setLoading(true);
+    setSendingOtp(true);
 
     try {
       const response = await fetch("/api/send-otp", {
@@ -66,7 +149,7 @@ export default function MyOrdersPage() {
       toast.error("Error sending OTP. Please try again.");
       console.error(error);
     } finally {
-      setLoading(false);
+      setSendingOtp(false);
     }
   };
 
@@ -78,7 +161,7 @@ export default function MyOrdersPage() {
       return;
     }
 
-    setLoading(true);
+    setVerifyingOtp(true);
 
     try {
       const response = await fetch("/api/verify-otp", {
@@ -112,6 +195,9 @@ export default function MyOrdersPage() {
       setOtpSent(false);
       setOtp("");
 
+      // Save session to localStorage for 24-hour persistence
+      saveSession(email.trim(), data.name);
+
       if (ordersData.ordersCount === 0) {
         toast.success("No orders found");
       } else {
@@ -121,11 +207,12 @@ export default function MyOrdersPage() {
       toast.error(error.message || "Error verifying OTP. Please try again.");
       console.error(error);
     } finally {
-      setLoading(false);
+      setVerifyingOtp(false);
     }
   };
 
-  if (loading && !otpSent) {
+  // Show loading only while checking session
+  if (!sessionChecked) {
     return <Loading />;
   }
 
@@ -160,7 +247,7 @@ export default function MyOrdersPage() {
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Enter your full name"
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
-                      disabled={loading}
+                      disabled={sendingOtp}
                     />
                   </div>
 
@@ -178,12 +265,12 @@ export default function MyOrdersPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email"
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
-                      disabled={loading}
+                      disabled={sendingOtp}
                     />
                   </div>
 
-                  <Button disabled={loading} className="w-full">
-                    {loading ? "Sending OTP..." : "Send OTP"}
+                  <Button disabled={sendingOtp} className="w-full">
+                    {sendingOtp ? "Sending OTP..." : "Send OTP"}
                   </Button>
                 </form>
               ) : (
@@ -214,25 +301,35 @@ export default function MyOrdersPage() {
                       placeholder="Enter 6-digit OTP"
                       maxLength={6}
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-black focus:border-black"
-                      disabled={loading}
+                      disabled={verifyingOtp}
                     />
                   </div>
 
-                  <Button disabled={loading} className="w-full">
-                    {loading ? "Verifying..." : "Verify OTP"}
+                  <Button disabled={verifyingOtp} className="w-full">
+                    {verifyingOtp ? "Verifying..." : "Verify OTP"}
                   </Button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOtpSent(false);
-                      setOtp("");
-                    }}
-                    className="w-full text-sm text-gray-600 hover:text-gray-900 mt-2"
-                    disabled={loading}
-                  >
-                    Use different email
-                  </button>
+                  <div className="flex justify-between items-center mt-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOtpSent(false);
+                        setOtp("");
+                      }}
+                      className="text-sm text-gray-600 hover:text-gray-900"
+                      disabled={verifyingOtp || sendingOtp}
+                    >
+                      Use different email
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSendOtp()}
+                      className="text-sm text-blue-600 hover:text-blue-900"
+                      disabled={verifyingOtp || sendingOtp}
+                    >
+                      {sendingOtp ? "Sending..." : "Resend OTP"}
+                    </button>
+                  </div>
                 </form>
               )}
             </div>
@@ -252,17 +349,10 @@ export default function MyOrdersPage() {
               <div className="text-center py-12">
                 <p className="text-gray-500">No orders found for {email}</p>
                 <button
-                  onClick={() => {
-                    setVerified(false);
-                    setName("");
-                    setEmail("");
-                    setOtpSent(false);
-                    setOtp("");
-                    setOrders(null);
-                  }}
+                  onClick={clearSessionAndShowLogin}
                   className="mt-4 text-blue-600 hover:text-blue-900"
                 >
-                  View orders for different email
+                  Use another email
                 </button>
               </div>
             ) : (
@@ -285,17 +375,10 @@ export default function MyOrdersPage() {
                 </div>
 
                 <button
-                  onClick={() => {
-                    setVerified(false);
-                    setName("");
-                    setEmail("");
-                    setOtpSent(false);
-                    setOtp("");
-                    setOrders(null);
-                  }}
+                  onClick={clearSessionAndShowLogin}
                   className="text-sm text-blue-600 hover:text-blue-900"
                 >
-                  View orders for different email
+                  Use another email
                 </button>
 
                 <div className="space-y-6">
@@ -385,9 +468,14 @@ export default function MyOrdersPage() {
                               className="flex justify-between items-center text-sm"
                             >
                               <div>
-                                <p className="font-medium">
+                                <button
+                                  onClick={() =>
+                                    router.push(`/product/${item.product.id}`)
+                                  }
+                                  className="font-medium text-left hover:text-blue-600 hover:underline transition cursor-pointer"
+                                >
                                   {item.product.name}
-                                </p>
+                                </button>
                                 <p className="text-gray-500">
                                   Price: ₹{item.product.price} ×{" "}
                                   {item.quantity || 1}
@@ -405,6 +493,132 @@ export default function MyOrdersPage() {
                           ))}
                         </div>
                       </div>
+
+                      {/* Action Buttons - Hide for CANCELLED orders */}
+                      {order.status !== "CANCELLED" && (
+                        <div className="border-t mt-4 pt-4">
+                          <div className="flex gap-3">
+                            {/* For DELIVERED orders: Buy Again and Refund */}
+                            {order.status === "DELIVERED" ? (
+                              <>
+                                <button
+                                  onClick={() => {
+                                    // Navigate to the first product in the order
+                                    if (order.orderItems.length > 0) {
+                                      router.push(
+                                        `/product/${order.orderItems[0].product.id}`
+                                      );
+                                    }
+                                  }}
+                                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-full font-medium hover:bg-green-700 transition flex items-center justify-center gap-2"
+                                >
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                                    />
+                                  </svg>
+                                  Buy Again
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    const params = new URLSearchParams({
+                                      orderId: order.id,
+                                      orderNumber: order.id.slice(0, 8),
+                                      email: email,
+                                    });
+                                    router.push(`/refund?${params.toString()}`);
+                                  }}
+                                  className="flex-1 px-4 py-2 border border-red-600 text-red-600 rounded-full font-medium hover:bg-red-50 transition flex items-center justify-center gap-2"
+                                >
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                    />
+                                  </svg>
+                                  Request Refund
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                {/* For non-delivered orders: Track Order and Cancel */}
+                                <button
+                                  onClick={() => {
+                                    const params = new URLSearchParams({
+                                      orderId: order.id,
+                                      orderNumber: order.id.slice(0, 8),
+                                      status: order.status || "PENDING",
+                                    });
+                                    router.push(
+                                      `/track-order?${params.toString()}`
+                                    );
+                                  }}
+                                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition flex items-center justify-center gap-2"
+                                >
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                                    />
+                                  </svg>
+                                  Track Order
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    const params = new URLSearchParams({
+                                      orderId: order.id,
+                                      orderNumber: order.id.slice(0, 8),
+                                      email: email,
+                                      status: order.status || "PENDING",
+                                    });
+                                    router.push(
+                                      `/cancel-order?${params.toString()}`
+                                    );
+                                  }}
+                                  className="flex-1 px-4 py-2 border border-orange-600 text-orange-600 rounded-full font-medium hover:bg-orange-50 transition flex items-center justify-center gap-2"
+                                >
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M6 18L18 6M6 6l12 12"
+                                    />
+                                  </svg>
+                                  Cancel Order
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

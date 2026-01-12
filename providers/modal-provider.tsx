@@ -10,11 +10,11 @@ const ModalProvider = () => {
     setIsMounted(true);
   }, []);
 
-  return (
-    <div style={{ display: isMounted ? "block" : "none" }}>
-      <PreviewModal />
-    </div>
-  );
+  if (!isMounted) {
+    return null;
+  }
+
+  return <PreviewModal />;
 };
 
 export default ModalProvider;

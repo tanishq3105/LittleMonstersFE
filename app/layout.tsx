@@ -18,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={urban.className}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={urban.className} suppressHydrationWarning>
         <ModalProvider />
         <ToastProvider />
         <Navbar />
