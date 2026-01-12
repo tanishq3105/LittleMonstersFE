@@ -3,7 +3,7 @@
 import { Product } from "@/types";
 import Image from "next/image";
 import IconButton from "@/components/ui/icon-button";
-import { Expand, ShoppingCart } from "lucide-react";
+import { Expand, ShoppingCart, Minus, Plus } from "lucide-react";
 import Currency from "@/components/ui/currency";
 import { useRouter } from "next/navigation";
 import PreviewModal from "./../preview-modal";
@@ -19,6 +19,11 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
   const cart = useCart();
   const previewModal = usePreviewModal();
   const router = useRouter();
+
+  // Find if this product is in cart and get its quantity
+  const cartItem = cart.items.find((item) => item.product?.id === data.id);
+  const quantity = cartItem?.quantity || 0;
+
   const handleClick = () => {
     router.push(`/product/${data?.id}`);
   };
@@ -31,6 +36,16 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
   const onAddToCart: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
     cart.addItem(data);
+  };
+
+  const onIncrement: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.stopPropagation();
+    cart.incrementQuantity(data.id);
+  };
+
+  const onDecrement: MouseEventHandler<HTMLButtonElement> = (event) => {
+    event.stopPropagation();
+    cart.decrementQuantity(data.id);
   };
 
   return (
@@ -53,11 +68,34 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
               icon={<Expand size={20} className="text-white" />}
               className="bg-teal-500"
             />
-            <IconButton
-              onClick={onAddToCart}
-              icon={<ShoppingCart size={20} className="text-white" />}
-              className="bg-amber-400"
-            />
+            {quantity === 0 ? (
+              <IconButton
+                onClick={onAddToCart}
+                icon={<ShoppingCart size={20} className="text-white" />}
+                className="bg-amber-400"
+              />
+            ) : (
+              <div
+                className="flex items-center bg-white rounded-full shadow-md"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={onDecrement}
+                  className="p-2 hover:bg-gray-100 rounded-l-full transition-colors"
+                >
+                  <Minus size={16} className="text-gray-700" />
+                </button>
+                <span className="px-3 text-sm font-semibold min-w-[30px] text-center">
+                  {quantity}
+                </span>
+                <button
+                  onClick={onIncrement}
+                  className="p-2 hover:bg-gray-100 rounded-r-full transition-colors"
+                >
+                  <Plus size={16} className="text-gray-700" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

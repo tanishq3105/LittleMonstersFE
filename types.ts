@@ -23,6 +23,12 @@ export interface Product {
     images: Image[]
 }
 
+// Cart item includes product and quantity
+export interface CartItem {
+    product: Product;
+    quantity: number;
+}
+
 export interface Image {
     id: string;
     url: string;
@@ -33,9 +39,9 @@ export interface Size {
     name: string;
     value: string;
 }
-export interface Age extends Size{};
-export interface Duration extends Size{};
-export interface Destination extends Size{};
+export interface Age extends Size { };
+export interface Duration extends Size { };
+export interface Destination extends Size { };
 export interface Color {
     id: string;
     name: string;

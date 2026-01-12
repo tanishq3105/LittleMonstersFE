@@ -12,6 +12,9 @@ export default function PaymentSuccess({
 }) {
   const [countdown, setCountdown] = useState(5);
 
+  // Check if this is a COD order
+  const isCOD = transactionId?.startsWith("COD-");
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -41,32 +44,55 @@ export default function PaymentSuccess({
 
         {/* Success Message */}
         <h1 className="text-3xl font-bold text-gray-900 mb-3">
-          Payment Successful!
+          {isCOD ? "Order Placed Successfully!" : "Payment Successful!"}
         </h1>
         <p className="text-gray-600 mb-8">
-          Your transaction has been completed successfully. A confirmation email
-          has been sent to your inbox.
+          {isCOD
+            ? "Your order has been placed successfully. Please keep the exact amount ready for payment upon delivery. A confirmation email has been sent to your inbox."
+            : "Your transaction has been completed successfully. A confirmation email has been sent to your inbox."}
         </p>
 
         {/* Transaction Details */}
         <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left">
           <div className="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
-            <span className="text-gray-600">Amount Paid</span>
+            <span className="text-gray-600">
+              {isCOD ? "Amount to Pay" : "Amount Paid"}
+            </span>
             <span className="text-2xl font-bold text-gray-900">
               {totalPrice}
             </span>
           </div>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-gray-600 text-sm">Transaction ID</span>
+            <span className="text-gray-600 text-sm">
+              {isCOD ? "Order ID" : "Transaction ID"}
+            </span>
             <span className="text-amber-600 font-mono text-sm">
               {transactionId}
             </span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center mb-2">
             <span className="text-gray-600 text-sm">Date & Time</span>
             <span className="text-gray-900 text-sm">{dateTime}</span>
           </div>
+          {isCOD && (
+            <div className="flex justify-between items-center pt-2 border-t border-gray-200 mt-2">
+              <span className="text-gray-600 text-sm">Payment Method</span>
+              <span className="text-orange-600 font-medium text-sm">
+                Cash on Delivery
+              </span>
+            </div>
+          )}
         </div>
+
+        {/* COD Info Banner */}
+        {isCOD && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+            <p className="text-orange-700 text-sm">
+              💵 Please pay <strong>₹{totalPrice}</strong> in cash when your
+              order is delivered.
+            </p>
+          </div>
+        )}
 
         {/* Countdown Timer */}
         <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">

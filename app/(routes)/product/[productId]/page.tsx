@@ -5,14 +5,19 @@ import Info from "@/components/info";
 import ProductList from "@/components/product-list";
 import Container from "@/components/ui/container";
 
+export const revalidate = 300; // Cache for 5 minutes
+
 type Params = Promise<{ productId: string }>;
 
 const ProductPage = async ({ params }: { params: Params }) => {
   const { productId } = await params;
   const product = await getProduct(productId);
+
+  // Fetch suggested products (can't be parallel with product since we need category ID)
   const suggestProducts = await getProducts({
     categoryId: product?.category?.id,
   });
+
   return (
     <div className="bg-white">
       <Container>
