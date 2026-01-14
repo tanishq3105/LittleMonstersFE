@@ -1,15 +1,18 @@
 import { Footer, Navbar } from "@/components";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Urbanist } from "next/font/google";
+import { Nunito } from "next/font/google";
 import ModalProvider from "@/providers/modal-provider";
 import ToastProvider from "@/providers/toast-provider";
 
-const urban = Urbanist({ subsets: ["latin"] });
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
-  title: "Store",
-  description: "Store",
+  title: "Little Monsters - Fun Travel Kits for Kids",
+  description: "Screen-free creative activities for little adventurers",
 };
 
 export default function RootLayout({
@@ -19,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={urban.className} suppressHydrationWarning>
+      <body className={nunito.className} suppressHydrationWarning>
         <ModalProvider />
         <ToastProvider />
         <Navbar />

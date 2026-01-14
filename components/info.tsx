@@ -29,61 +29,61 @@ const Info: React.FC<InfoProps> = ({ data }) => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900">{data.name}</h1>
+    <div className="bg-white p-6 rounded-2xl border border-gray-100">
+      <h1 className="text-3xl font-bold text-teal-700">{data.name}</h1>
       <div className="flex items-end justify-between mt-3">
-        <div className="text-2xl text-gray-900">
+        <div className="text-2xl font-bold text-amber-500">
           <Currency value={data?.price} />
         </div>
       </div>
-      <hr className="my-4" />
-      <div className="flex flex-col gap-y-6">
-        <div className="flex items-center gap-x-4">
-          <h3 className="font-semibold text-black">Mode of Travel:</h3>
-          <div>{data?.size?.value}</div>
+      <hr className="my-4 border-teal-100" />
+      <div className="flex flex-col gap-y-4">
+        <div className="flex items-center gap-x-4 p-3 bg-teal-50 rounded-xl">
+          <h3 className="font-semibold text-teal-700">Mode of Travel:</h3>
+          <div className="text-gray-700">{data?.size?.value}</div>
         </div>
-        <div className="flex items-center gap-x-4">
-          <h3 className="font-semibold text-black">Duration:</h3>
-          <div>{data?.duration?.value}</div>
+        <div className="flex items-center gap-x-4 p-3 bg-amber-50 rounded-xl">
+          <h3 className="font-semibold text-amber-700">Duration:</h3>
+          <div className="text-gray-700">{data?.duration?.value}</div>
         </div>
-        <div className="flex items-center gap-x-4">
-          <h3 className="font-semibold text-black">Age:</h3>
-          <div>{data?.age?.value}</div>
+        <div className="flex items-center gap-x-4 p-3 bg-rose-50 rounded-xl">
+          <h3 className="font-semibold text-rose-600">Age:</h3>
+          <div className="text-gray-700">{data?.age?.value}</div>
         </div>
-        <div className="flex items-center gap-x-4">
-          <h3 className="font-semibold text-black">Destination:</h3>
-          <div>{data?.destination?.value}</div>
+        <div className="flex items-center gap-x-4 p-3 bg-teal-50 rounded-xl">
+          <h3 className="font-semibold text-teal-700">Destination:</h3>
+          <div className="text-gray-700">{data?.destination?.value}</div>
         </div>
       </div>
-      <div className="flex items-center mt-10 gap-x-4">
+      <div className="flex items-center mt-8 gap-x-4">
         {quantity === 0 ? (
           <Button
             onClick={onAddToCart}
-            className="flex items-center gap-x-2 bg-rose-500 hover:bg-amber-500 cursor-pointer"
+            className="flex items-center gap-x-2 bg-teal-500 hover:bg-amber-500 cursor-pointer"
           >
             Add To Cart
             <ShoppingCart />
           </Button>
         ) : (
           <div className="flex items-center gap-x-4">
-            <div className="flex items-center border-2 border-rose-500 rounded-full overflow-hidden">
+            <div className="flex items-center border-2 border-teal-500 rounded-full overflow-hidden">
               <button
                 onClick={onDecrement}
-                className="p-3 hover:bg-rose-100 transition-colors"
+                className="p-3 hover:bg-teal-50 transition-colors"
               >
-                <Minus size={20} className="text-rose-500" />
+                <Minus size={20} className="text-teal-600" />
               </button>
-              <span className="px-6 py-2 text-lg font-semibold min-w-[60px] text-center">
+              <span className="px-6 py-2 text-lg font-bold min-w-[60px] text-center text-teal-700">
                 {quantity}
               </span>
               <button
                 onClick={onIncrement}
-                className="p-3 hover:bg-rose-100 transition-colors"
+                className="p-3 hover:bg-teal-50 transition-colors"
               >
-                <Plus size={20} className="text-rose-500" />
+                <Plus size={20} className="text-teal-600" />
               </button>
             </div>
-            <span className="text-sm text-gray-500">in cart</span>
+            <span className="text-sm font-medium text-teal-600">in cart</span>
           </div>
         )}
       </div>

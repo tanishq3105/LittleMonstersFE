@@ -29,3 +29,19 @@
 html, body, :root {
   height: 100%;
 }
+
+/* Kid-friendly soft background */
+body {
+  background: linear-gradient(180deg, #fefefe 0%, #f8fffe 50%, #fffdf8 100%);
+}
+
+/* Softer, rounder cards for kids */
+.kid-card {
+  border-radius: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.kid-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(22, 156, 151, 0.15);
+}

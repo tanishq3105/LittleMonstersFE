@@ -51,15 +51,15 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
   return (
     <div
       onClick={handleClick}
-      className="p-3 space-y-4 bg-white border cursor-pointer group rounded-xl"
+      className="p-4 space-y-4 bg-white border-2 border-gray-100 cursor-pointer group rounded-2xl shadow-sm hover:shadow-lg hover:border-teal-200 transition-all duration-200 hover:-translate-y-1"
     >
       {/* Images and Actions */}
-      <div className="relative bg-gray-100 aspect-square rounded-xl">
+      <div className="relative bg-gradient-to-br from-teal-50 to-amber-50 aspect-square rounded-xl overflow-hidden">
         <Image
           fill
           src={data?.images?.[0]?.url}
           alt="Images"
-          className="object-cover rounded-md aspect-square"
+          className="object-contain p-2"
         />
         <div className="absolute w-full px-6 transition opacity-0 group-hover:opacity-100 bottom-5">
           <div className="flex justify-center gap-x-6">
@@ -98,6 +98,19 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
             )}
           </div>
         </div>
+      </div>
+      {/* Badges */}
+      <div className="flex flex-wrap gap-2">
+        {data?.age && (
+          <span className="px-2 py-1 text-xs font-medium bg-teal-100 text-teal-700 rounded-full">
+            Ages {data.age.name}
+          </span>
+        )}
+        {data?.size && (
+          <span className="px-2 py-1 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
+            {data.size.name}
+          </span>
+        )}
       </div>
       {/* Description */}
       <div>

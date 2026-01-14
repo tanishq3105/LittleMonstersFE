@@ -1,21 +1,21 @@
 import Image from "next/image";
 export default function Footer() {
   return (
-    <footer className="flex flex-col items-start gap-12 p-12 w-full bg-[#169C97]">
+    <footer className="flex flex-col items-start gap-12 p-12 w-full bg-teal-600">
       <div className="flex items-start justify-between w-full flex-wrap gap-8">
         {/* Brand Section */}
-        <div className="flex flex-col items-start gap-6 w-full md:w-auto">
+        <div className="flex flex-col items-start gap-6 w-full md:w-auto max-w-sm">
           <div className="flex flex-col items-start gap-6 w-full">
-            <div className="w-24 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
+            <div className="w-28 h-14 rounded-2xl bg-white/90 flex items-center justify-center p-2">
               <Image
                 src="https://www.littlemonsters.fun/assets/Logo.png"
                 alt="Little Monsters"
                 width={120}
                 height={48}
-                className="h-12 w-auto object-contain bg-[#169C97]"
+                className="h-10 w-auto object-contain"
               />
             </div>
-            <p className="font-['Plus_Jakarta_Sans',Helvetica] font-normal text-white text-base leading-6">
+            <p className="font-medium text-white/90 text-base leading-relaxed">
               Keeping energetic kids happily busy during travel with
               screen-free, creative activities.
             </p>
