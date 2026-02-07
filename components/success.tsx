@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { Check, ArrowRight } from "lucide-react";
 
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
 export default function PaymentSuccess({
   totalPrice,
   transactionId,
@@ -59,7 +68,7 @@ export default function PaymentSuccess({
               {isCOD ? "Amount to Pay" : "Amount Paid"}
             </span>
             <span className="text-2xl font-bold text-gray-900">
-              {totalPrice}
+              {formatCurrency(totalPrice)}
             </span>
           </div>
           <div className="flex justify-between items-center mb-2">
@@ -88,8 +97,8 @@ export default function PaymentSuccess({
         {isCOD && (
           <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
             <p className="text-orange-700 text-sm">
-              💵 Please pay <strong>₹{totalPrice}</strong> in cash when your
-              order is delivered.
+              💵 Please pay <strong>{formatCurrency(totalPrice)}</strong> in
+              cash when your order is delivered.
             </p>
           </div>
         )}

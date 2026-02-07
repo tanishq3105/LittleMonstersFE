@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendOrderCancelledEmail } from '@/lib/email';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { orderId, email, reason } = body;
+        const { orderId, email, reason, customerName, items, totalAmount } = body;
 
         if (!orderId) {
             return new NextResponse(
@@ -41,6 +42,21 @@ export async function POST(req: NextRequest) {
         }
 
         const data = await response.json();
+
+        // Send cancellation email
+        await sendOrderCancelledEmail({
+            orderId,
+            name: customerName || data.name || 'Customer',
+            email,
+            reason,
+            items: items?.map((item: any) => ({
+                name: item.name || item.product?.name || 'Product',
+                price: Number(item.price || item.product?.price || 0),
+                quantity: item.quantity || 1
+            })),
+            totalAmount: totalAmount || undefined
+        });
+
         return NextResponse.json({
             success: true,
             message: 'Order cancelled successfully',

@@ -1,8 +1,10 @@
 "use client";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import PaymentSuccess from "@/components/success";
+import Loader from "@/components/loader";
 
-const SuccessPage = () => {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const totalPrice = searchParams.get("totalPrice");
   const transactionId = searchParams.get("transactionId");
@@ -13,6 +15,14 @@ const SuccessPage = () => {
       transactionId={transactionId || ""}
       dateTime={dateTime || ""}
     />
+  );
+}
+
+const SuccessPage = () => {
+  return (
+    <Suspense fallback={<Loader />}>
+      <SuccessContent />
+    </Suspense>
   );
 };
 

@@ -57,8 +57,8 @@ const ProductCard: React.FC<ProductCard> = ({ data }) => {
       <div className="relative bg-gradient-to-br from-teal-50 to-amber-50 aspect-square rounded-xl overflow-hidden">
         <Image
           fill
-          src={data?.images?.[0]?.url}
-          alt="Images"
+          src={data?.images?.[0]?.url || "/logo.png"}
+          alt={data?.name || "Product image"}
           className="object-contain p-2"
         />
         <div className="absolute w-full px-6 transition opacity-0 group-hover:opacity-100 bottom-5">

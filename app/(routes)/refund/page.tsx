@@ -14,6 +14,7 @@ function RefundContent() {
   const orderId = searchParams.get("orderId");
   const orderNumber = searchParams.get("orderNumber");
   const email = searchParams.get("email");
+  const customerName = searchParams.get("customerName");
 
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,6 +54,7 @@ function RefundContent() {
           orderId,
           reason: reason.trim(),
           email,
+          customerName: customerName || "Customer",
         }),
       });
 

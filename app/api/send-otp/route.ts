@@ -66,8 +66,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'OTP sent to your email',
-      // For demo/testing - remove in production
-      demo_otp: otp,
+      // Only include demo_otp in development mode
+      ...(process.env.NODE_ENV === 'development' && { demo_otp: otp }),
     });
   } catch (error) {
     console.error('[SEND_OTP_ERROR]', error);

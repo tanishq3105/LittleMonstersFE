@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import getProduct from "@/actions/get-product";
 import getProducts from "@/actions/get-products";
 import Gallery from "@/components/gallery";
@@ -13,10 +14,20 @@ const ProductPage = async ({ params }: { params: Params }) => {
   const { productId } = await params;
   const product = await getProduct(productId);
 
+  // Handle product not found
+  if (!product || !product.id) {
+    notFound();
+  }
+
   // Fetch suggested products (can't be parallel with product since we need category ID)
   const suggestProducts = await getProducts({
     categoryId: product?.category?.id,
   });
+
+  // Filter out the current product from suggestions
+  const filteredSuggestions = suggestProducts.filter(
+    (item) => item.id !== product.id
+  );
 
   return (
     <div className="bg-white">
@@ -31,7 +42,7 @@ const ProductPage = async ({ params }: { params: Params }) => {
             </div>
           </div>
           <hr className="my-10" />
-          <ProductList title="You may also like" items={suggestProducts} />
+          <ProductList title="You may also like" items={filteredSuggestions} />
         </div>
       </Container>
     </div>

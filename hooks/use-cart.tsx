@@ -52,7 +52,7 @@ const useCart = create(
                 : item
             ),
           });
-          toast.success("Item added to card.");
+          toast.success("Item added to cart.");
           return;
         }
 

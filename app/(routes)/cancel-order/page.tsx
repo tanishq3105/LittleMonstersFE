@@ -15,6 +15,7 @@ function CancelOrderContent() {
   const orderNumber = searchParams.get("orderNumber");
   const email = searchParams.get("email");
   const status = searchParams.get("status");
+  const customerName = searchParams.get("customerName");
 
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
@@ -53,6 +54,7 @@ function CancelOrderContent() {
           orderId,
           reason: reason.trim() || "Customer requested cancellation",
           email,
+          customerName: customerName || "Customer",
         }),
       });
 

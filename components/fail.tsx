@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import { X, ArrowLeft, RefreshCw } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function PaymentFailure() {
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(10);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          // Redirect to payment page
-          // window.location.href = '/payment';
+          router.push("/cart");
           return 0;
         }
         return prev - 1;
@@ -18,7 +19,7 @@ export default function PaymentFailure() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
@@ -68,7 +69,7 @@ export default function PaymentFailure() {
         {/* Countdown Timer */}
         <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 mb-6">
           <p className="text-gray-700 text-sm">
-            Redirecting to payment page in{" "}
+            Redirecting to cart in{" "}
             <span className="font-bold text-gray-900">{countdown}</span>{" "}
             seconds...
           </p>
@@ -76,11 +77,17 @@ export default function PaymentFailure() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
-          <button className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+          <button
+            onClick={() => router.push("/cart")}
+            className="flex-1 bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
             <RefreshCw className="w-4 h-4" />
             Try Again
           </button>
-          <button className="flex-1 bg-amber-400 hover:bg-amber-500 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+          <button
+            onClick={() => router.back()}
+            className="flex-1 bg-amber-400 hover:bg-amber-500 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
             <ArrowLeft className="w-4 h-4" />
             Go Back
           </button>

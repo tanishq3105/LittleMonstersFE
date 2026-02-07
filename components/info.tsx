@@ -31,6 +31,11 @@ const Info: React.FC<InfoProps> = ({ data }) => {
   return (
     <div className="bg-white p-6 rounded-2xl border border-gray-100">
       <h1 className="text-3xl font-bold text-teal-700">{data.name}</h1>
+      {data.description && (
+        <p className="mt-2 text-gray-600 whitespace-pre-line">
+          {data.description}
+        </p>
+      )}
       <div className="flex items-end justify-between mt-3">
         <div className="text-2xl font-bold text-amber-500">
           <Currency value={data?.price} />
@@ -38,22 +43,36 @@ const Info: React.FC<InfoProps> = ({ data }) => {
       </div>
       <hr className="my-4 border-teal-100" />
       <div className="flex flex-col gap-y-4">
-        <div className="flex items-center gap-x-4 p-3 bg-teal-50 rounded-xl">
-          <h3 className="font-semibold text-teal-700">Mode of Travel:</h3>
-          <div className="text-gray-700">{data?.size?.value}</div>
-        </div>
-        <div className="flex items-center gap-x-4 p-3 bg-amber-50 rounded-xl">
-          <h3 className="font-semibold text-amber-700">Duration:</h3>
-          <div className="text-gray-700">{data?.duration?.value}</div>
-        </div>
-        <div className="flex items-center gap-x-4 p-3 bg-rose-50 rounded-xl">
-          <h3 className="font-semibold text-rose-600">Age:</h3>
-          <div className="text-gray-700">{data?.age?.value}</div>
-        </div>
-        <div className="flex items-center gap-x-4 p-3 bg-teal-50 rounded-xl">
-          <h3 className="font-semibold text-teal-700">Destination:</h3>
-          <div className="text-gray-700">{data?.destination?.value}</div>
-        </div>
+        {data?.size?.value && (
+          <div className="flex items-center gap-x-4 p-3 bg-teal-50 rounded-xl">
+            <h3 className="font-semibold text-teal-700">Mode of Travel:</h3>
+            <div className="text-gray-700">{data.size.value}</div>
+          </div>
+        )}
+        {data?.duration?.value && (
+          <div className="flex items-center gap-x-4 p-3 bg-amber-50 rounded-xl">
+            <h3 className="font-semibold text-amber-700">Duration:</h3>
+            <div className="text-gray-700">{data.duration.value}</div>
+          </div>
+        )}
+        {data?.age?.value && (
+          <div className="flex items-center gap-x-4 p-3 bg-rose-50 rounded-xl">
+            <h3 className="font-semibold text-rose-600">Age:</h3>
+            <div className="text-gray-700">{data.age.value}</div>
+          </div>
+        )}
+        {data?.destination?.value && (
+          <div className="flex items-center gap-x-4 p-3 bg-teal-50 rounded-xl">
+            <h3 className="font-semibold text-teal-700">Destination:</h3>
+            <div className="text-gray-700">{data.destination.value}</div>
+          </div>
+        )}
+        {data?.productSize && (
+          <div className="flex items-center gap-x-4 p-3 bg-purple-50 rounded-xl">
+            <h3 className="font-semibold text-purple-700">Size:</h3>
+            <div className="text-gray-700">{data.productSize}</div>
+          </div>
+        )}
       </div>
       <div className="flex items-center mt-8 gap-x-4">
         {quantity === 0 ? (
